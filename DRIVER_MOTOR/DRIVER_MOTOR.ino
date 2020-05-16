@@ -22,8 +22,6 @@ void setup() {
 }
 
 void loop() {
-  //controlDirection(7, 255);
-  //delay(2000);
   motorTest();
 }
  
