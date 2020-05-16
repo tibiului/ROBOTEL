@@ -1,0 +1,9 @@
+name=ROBOT
+version=0.0.1
+author=Ului Tiberiu <tibiului37@gmail.com>
+maintainer=Ului Tiberiu <tibiului37@gmail.com>
+sentence=Robot pentru curatenie
+paragraph=Robot multifunctional
+category=Device Control
+url=https://github.com/tibiului
+architectures=*
