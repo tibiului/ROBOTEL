@@ -109,13 +109,6 @@ void controlDirection( int d , int s ) {
         digitalWrite(motorDreaptaInapoi, LOW);
         digitalWrite(motorStangaInainte, LOW);
         digitalWrite(motorStangaInapoi, LOW);
-        break;
-      case 8:
-        // Tight Left
-        digitalWrite(motorDreaptaInainte, HIGH);
-        digitalWrite(motorDreaptaInapoi, LOW);
-        digitalWrite(motorStangaInainte, LOW);
-        digitalWrite(motorStangaInapoi, HIGH);
         break;    
   }
 }
