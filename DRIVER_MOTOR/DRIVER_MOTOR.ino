@@ -15,7 +15,6 @@ void loop() {
   // put your main code here, to run repeatedly:
   controlDirection(10, 255);
   delay(1000);
- 
 }
 
 void controlDirection( int d , int s ) { 
