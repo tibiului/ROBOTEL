@@ -1,20 +1,20 @@
-#include <FastLED.h>  //  LIBRARIE PT. BARA DE NEOPIXELI
-#define LED_PIN 2     //  DEFINIM PINUL PRIN CARE BARA DE NEOPIXELI COMUNICA CU ARDUINO
-#define NUM_LEDS 8    //  DEFINIM NUMARUL DE LEDURI DE PE BARA DE NEOPIXELI
-#include<Servo.h>     //  LIBRARIE PENTRU SERVOMOTOR 
-#include "SENZOR_ULTRASONIC.h"
+#include <FastLED.h>            //  LIBRARIE PT. BARA DE NEOPIXELI
+#define LED_PIN 2               //  DEFINIM PINUL PRIN CARE BARA DE NEOPIXELI COMUNICA CU ARDUINO
+#define NUM_LEDS 8              //  DEFINIM NUMARUL DE LEDURI DE PE BARA DE NEOPIXELI
+#include<Servo.h>               //  LIBRARIE PT. SERVOMOTOR 
+#include "SENZOR_ULTRASONIC.h"  //  LIBRARIE PT. SENZORUL ULTRASONIC
 
 
 
-CRGB leds[NUM_LEDS];  //  FOLOSIM FUNCTIA PT. BARA DE NEOPIXELI
-Servo motoras;        //  FOLOSIM SERVOMOTORUL
+CRGB leds[NUM_LEDS];            //  FOLOSIM FUNCTIA PT. BARA DE NEOPIXELI
+Servo motoras;                  //  FOLOSIM SERVOMOTORUL
 
 
-int motorStangaInainte = 3;
-int motorStangaInapoi = 6;
-int motorDreaptaInainte = 9;
-int motorDreaptaInapoi = 5;
-int trig = 8;                  //  PIN TRIG PENTRU SENZOR ULTRASUNETE
+int motorStangaInainte = 3;     //  FOLOSIM PINUL PWM 3 PENTRU MOTOR
+int motorStangaInapoi = 6;      //  FOLOSIM PINUL PWM 6 PENTRU MOTOR
+int motorDreaptaInainte = 9;    //  FOLOSIM PINUL PWM 9 PENTRU MOTOR
+int motorDreaptaInapoi = 5;     //  FOLOSIM PINUL PWM 5 PENTRU MOTOR
+int trig = 8;                   //  PIN TRIG PENTRU SENZOR ULTRASUNETE
 int echo = 12;                  //  PIN ECHO PENTRU SENZOR ULTRASUNETE
 
 float distantaStanga = 0;
@@ -57,7 +57,7 @@ void loop() {
   }
   if (distantaInainte < 20) {
     controlDirection(0, 255);
-    for (int i = 0; i < 8; i++) {   // Stinge toate LED-urile
+    for (int i = 0; i < 8; i++) {   
       leds[i] = CRGB(255, 255, 0);
       FastLED.show();
     }        
@@ -79,15 +79,14 @@ void loop() {
       if (distantaDreapta > distantaStanga) {
         controlDirection(5, 255);
         for(int i = 0; i < 8; i++) {
-         leds[i] = CRGB(255,255,255);
+          leds[i] = CRGB(255, 255, 255);
           FastLED.show();    
         }      
-    delay(200);
         delay(200);
       } else if (distantaDreapta < distantaStanga) {
           controlDirection(7, 255);
           for(int i = 0; i < 8; i++) {
-            leds[i] = CRGB(255,0,25);
+            leds[i] = CRGB(255, 0, 25);
             FastLED.show();    
           }      
           delay(200);
@@ -173,7 +172,6 @@ void controlDirection( int d , int s ) {
 }
 
 int verificaDistanta() {
-  
   digitalWrite(trig, LOW);
   delayMicroseconds(2);
   digitalWrite(trig, HIGH);
@@ -183,29 +181,3 @@ int verificaDistanta() {
   distanta = (durata * 0.0342) / 2; //transformare in cm
   return distanta;
 } 
-
-void motorTest() {  //  //motorTest();
- 
-  controlDirection(0, 255); //  STOP NORMAL
-  delay(5000); 
-  controlDirection(2, 255); //  STOP FAST
-  delay(5000);
-  controlDirection(3, 255); //  SLOW FORWARD
-  delay(5000); 
-  for (int i = 0; i < 8; i++) {   // Stinge toate LED-uril
-    leds[i] = CRGB(0, 0, 0);
-    FastLED.show();              
-  }
-  controlDirection(4, 255); //  REVERSE
-  delay(5000);
-  controlDirection(5, 255); //  WIDE RIGHT
-  delay(5000);
-  controlDirection(6, 255); //  TIGHT RIGHT
-  delay(5000);
-  controlDirection(7, 255); //  WIDE LEFT
-  delay(5000); 
-  controlDirection(8, 255); //  TIGHT LEFT
-  delay(5000); 
-  controlDirection(1, 255); //  STOP FAST
-  delay(5000); 
-}
