@@ -1,8 +1,11 @@
-#include <FastLED.h>  //LIBRARIE PT. BARA DE NEOPIXELI
-#define LED_PIN 2  // DEFINIM PINUL PRIN CARE COMUNICA CU ARDUINO
-#define NUM_LEDS 8  // DEFINIM NUMARUL DE LEDURI
+#include <FastLED.h>  //  LIBRARIE PT. BARA DE NEOPIXELI
+#define LED_PIN 2     //  DEFINIM PINUL PRIN CARE BARA DE NEOPIXELI COMUNICA CU ARDUINO
+#define NUM_LEDS 8    //  DEFINIM NUMARUL DE LEDURI DE PE BARA DE NEOPIXELI
+#include<Servo.h>     //  LIBRARIE PENTRU SERVOMOTOR 
 
-CRGB leds[NUM_LEDS];  //FOLOSIM FUNCTIA PT. BARA DE NEOPIXELI
+CRGB leds[NUM_LEDS];  //  FOLOSIM FUNCTIA PT. BARA DE NEOPIXELI
+Servo motoras;        //  FOLOSIM SERVOMOTORUL
+
 
 int motorStangaInainte = 3;
 int motorStangaInapoi = 6;
@@ -17,11 +20,13 @@ void setup() {
   pinMode(motorDreaptaInainte, OUTPUT);
   pinMode(motorDreaptaInapoi, OUTPUT);
   
-  FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);  //BARA DE NEOPIXELI
-  randomSeed( analogRead(0));  //CULORI DIFERITE PT. REVERSE
+  FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);  //  BARA DE NEOPIXELI
+  randomSeed( analogRead(0));                             //  CULORI DIFERITE PT. REVERSE
+  motoras.attach(10);                                     //  FOLOSIM PINUL PWM 10 PENTRU SERVOMOTOR 
 }
 
 void loop() {
+  motoras.write(90);  // initializam pozitia servomotorului la 90 (merge pana la 180)
   motorTest();
 }
  
@@ -154,26 +159,26 @@ void controlDirection( int d , int s ) {
 
 void motorTest() {
  
-  controlDirection(0, 255);
+  controlDirection(0, 255); //  STOP NORMAL
   delay(5000); 
-  controlDirection(2, 255);
+  controlDirection(2, 255); //  STOP FAST
   delay(5000);
-  controlDirection(3, 255);
+  controlDirection(3, 255); //  SLOW FORWARD
   delay(5000); 
   for (int i = 0; i < 8; i++) {   // Stinge toate LED-uril
     leds[i] = CRGB(0, 0, 0);
     FastLED.show();              
   }
-  controlDirection(4, 255);
+  controlDirection(4, 255); //  REVERSE
   delay(5000);
-  controlDirection(5, 255);
+  controlDirection(5, 255); //  WIDE RIGHT
   delay(5000);
-  controlDirection(6, 255);
+  controlDirection(6, 255); //  TIGHT RIGHT
   delay(5000);
-  controlDirection(7, 255);
+  controlDirection(7, 255); //  WIDE LEFT
   delay(5000); 
-  controlDirection(8, 255);
+  controlDirection(8, 255); //  TIGHT LEFT
   delay(5000); 
-  controlDirection(1, 255);
+  controlDirection(1, 255); //  STOP FAST
   delay(5000); 
 }
