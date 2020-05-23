@@ -14,10 +14,14 @@ int motorStangaInainte = 3;
 int motorStangaInapoi = 6;
 int motorDreaptaInainte = 9;
 int motorDreaptaInapoi = 5;
-unsigned short randomAlbastru;  //  CULORI DIFERITE PT. REVERSE
-unsigned short nrLedRandom;     //  CULORI DIFERITE PT. REVERSE
 int trig = 8;                  //  PIN TRIG PENTRU SENZOR ULTRASUNETE
 int echo = 12;                  //  PIN ECHO PENTRU SENZOR ULTRASUNETE
+
+float distantaStanga = 0;
+float distantaDreapta = 0;
+float distantaInainte = 0;
+long durata;
+float distanta;
 
 void setup() {
   pinMode(motorStangaInainte, OUTPUT);
@@ -28,13 +32,76 @@ void setup() {
   pinMode(echo, INPUT);
   
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);  //  BARA DE NEOPIXELI
-  randomSeed( analogRead(0));                             //  CULORI DIFERITE PT. REVERSE
   motoras.attach(10);                                     //  FOLOSIM PINUL PWM 10 PENTRU SERVOMOTOR 
 }
 
 void loop() {
-  motoras.write(90);  // initializam pozitia servomotorului la 90 (merge pana la 180)
-  motorTest();
+  motoras.write(90);  // initializam pozitia servomotorului la 90 in fata (merge pana la 180)
+  delay(200);
+  distantaInainte = verificaDistanta();
+  if(distantaInainte > 100) {     
+    controlDirection(2, 255);
+    for(int i = 0; i < 8; i++) {
+      leds[i] = CRGB(255,0,0);
+      FastLED.show();    
+    }      
+    delay(200);
+  }
+  if (distantaInainte < 50) {
+    controlDirection(3, 255);
+    for (int i = 0; i < 8; i++) {
+      leds[i] = CRGB(25, 0, 0);
+      FastLED.show();
+    }     
+    delay(200);
+  }
+  if (distantaInainte < 20) {
+    controlDirection(0, 255);
+    for (int i = 0; i < 8; i++) {   // Stinge toate LED-urile
+      leds[i] = CRGB(255, 255, 0);
+      FastLED.show();
+    }        
+    delay(200);
+    controlDirection(4, 255);
+    delay(150);    
+    controlDirection(0, 255);  
+    delay(100);                   
+    motoras.write(0);          
+    delay(300); 
+    distantaDreapta = verificaDistanta();
+    delay(300);
+    motoras.write(180);          
+    delay(300);
+    distantaStanga = verificaDistanta();
+    delay(300);
+    motoras.write(90);          
+    delay(200);
+      if (distantaDreapta > distantaStanga) {
+        controlDirection(5, 255);
+        for(int i = 0; i < 8; i++) {
+         leds[i] = CRGB(255,255,255);
+          FastLED.show();    
+        }      
+    delay(200);
+        delay(200);
+      } else if (distantaDreapta < distantaStanga) {
+          controlDirection(7, 255);
+          for(int i = 0; i < 8; i++) {
+            leds[i] = CRGB(255,0,25);
+            FastLED.show();    
+          }      
+          delay(200);
+        } else if ((distantaDreapta < 20) || (distantaStanga < 20)) {
+            controlDirection(4, 255);
+            delay(200);
+          } else {
+             controlDirection(2, 255);
+             delay(200);
+            }
+  } else {
+       controlDirection(2, 255);
+       delay(200);
+    }        
 }
  
 void controlDirection( int d , int s ) { 
@@ -45,11 +112,6 @@ void controlDirection( int d , int s ) {
         digitalWrite(motorDreaptaInapoi, LOW);
         digitalWrite(motorStangaInainte, LOW);
         digitalWrite(motorStangaInapoi, LOW);
-        for (int i = 0; i < 8; i++) {   // Stinge toate LED-urile
-          leds[i] = CRGB(0, 0, 0);
-          FastLED.show();
-          delay(1000);
-        }
         break;
       case 1:
         // STOP Fast
@@ -57,11 +119,6 @@ void controlDirection( int d , int s ) {
         digitalWrite(motorDreaptaInapoi, HIGH);
         digitalWrite(motorStangaInainte, HIGH);
         digitalWrite(motorStangaInapoi, HIGH);
-        for (int i = 0; i < 8; i++) {   // Stinge toate LED-urile
-          leds[i] = CRGB(0, 0, 0);
-          FastLED.show();
-          delay(1000);  
-        }        
         break;
       case 2:
         // Forward
@@ -69,10 +126,6 @@ void controlDirection( int d , int s ) {
         digitalWrite(motorDreaptaInapoi, LOW);
         digitalWrite(motorStangaInainte, HIGH);
         digitalWrite(motorStangaInapoi, LOW);
-        for(int i = 0; i < 8; i++) {
-          leds[i] = CRGB(255,0,0);
-          FastLED.show();    
-        }      
         break;
       case 3:
         // SLOW Forward
@@ -80,10 +133,6 @@ void controlDirection( int d , int s ) {
         analogWrite(motorDreaptaInapoi, 255-150);
         digitalWrite(motorStangaInainte, HIGH);
         analogWrite(motorStangaInapoi, 255-150);
-        for (int i = 0; i < 8; i++) {
-          leds[i] = CRGB(25, 0, 0);
-          FastLED.show();
-        }     
         break;        
       case 4:
         // Reverse
@@ -91,11 +140,6 @@ void controlDirection( int d , int s ) {
         digitalWrite(motorDreaptaInapoi, HIGH);
         digitalWrite(motorStangaInainte, LOW);
         digitalWrite(motorStangaInapoi, HIGH);
-        randomAlbastru = random(0, 100);  //  FACEM CULOAREA RANDOM
-        nrLedRandom = random(0, 9);  // SE VA DECIDE CE LED SA APRINDA
-        leds[nrLedRandom] = CRGB(randomAlbastru);  // SE APRINDE PRIMUL LED
-        FastLED.show();
-        delay(1000);
         break;
       case 5:
         // Wide Right
@@ -103,15 +147,6 @@ void controlDirection( int d , int s ) {
         digitalWrite(motorDreaptaInapoi, LOW);
         digitalWrite(motorStangaInainte, HIGH);
         digitalWrite(motorStangaInapoi, LOW);
-        for (int i = 0; i < 8; i++) {
-          leds[i] = CRGB(25, 0, 0);
-          FastLED.show();
-          delay(40);
-        }  
-        for (int i = 0; i < 8; i++) {   // Stinge toate LED-urile
-          leds[i] = CRGB(0, 0, 0);
-          FastLED.show();              
-        }  
         break;
       case 6:
         // Tight Right
@@ -119,52 +154,37 @@ void controlDirection( int d , int s ) {
         digitalWrite(motorDreaptaInapoi, HIGH);
         digitalWrite(motorStangaInainte, HIGH);
         digitalWrite(motorStangaInapoi, LOW);
-        for (int i = 0; i < 8; i++) {
-          leds[i] = CRGB(255, 0, 0);
-          FastLED.show();
-          delay(40);
-        }  
-        for (int i = 0; i < 8; i++) {   // Stinge toate LED-urile
-          leds[i] = CRGB(0, 0, 0);
-          FastLED.show();
-        }              
         break;
       case 7:
         // Wide Left
         digitalWrite(motorDreaptaInainte, HIGH);
         digitalWrite(motorDreaptaInapoi, LOW);
         digitalWrite(motorStangaInainte, LOW);
-        digitalWrite(motorStangaInapoi, LOW);
-        for (int i = 7; i < 8; i--) {
-          leds[i] = CRGB(25, 0, 0);
-          FastLED.show();
-          delay(100);
-        }  
-        for (int i = 0; i < 8; i++) {   // Stinge toate LED-urile
-          leds[i] = CRGB(0, 0, 0);
-          FastLED.show();
-        }                        
+        digitalWrite(motorStangaInapoi, LOW);                      
         break;
       case 8:
         // Tight Left
         digitalWrite(motorDreaptaInainte, HIGH);
         digitalWrite(motorDreaptaInapoi, LOW);
         digitalWrite(motorStangaInainte, LOW);
-        digitalWrite(motorStangaInapoi, HIGH);
-        for (int i = 7; i < 8; i--) {
-          leds[i] = CRGB(255, 0, 0);
-          FastLED.show();
-          delay(100);
-        }  
-        for (int i = 0; i < 8; i++) {   // Stinge toate LED-urile
-          leds[i] = CRGB(0, 0, 0);
-          FastLED.show();
-        }                          
+        digitalWrite(motorStangaInapoi, HIGH);                        
         break;    
   }
 }
 
-void motorTest() {
+int verificaDistanta() {
+  
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+  durata = pulseIn (echo ,HIGH);
+  distanta = (durata * 0.0342) / 2; //transformare in cm
+  return distanta;
+} 
+
+void motorTest() {  //  //motorTest();
  
   controlDirection(0, 255); //  STOP NORMAL
   delay(5000); 
