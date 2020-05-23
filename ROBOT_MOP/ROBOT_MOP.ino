@@ -2,6 +2,9 @@
 #define LED_PIN 2     //  DEFINIM PINUL PRIN CARE BARA DE NEOPIXELI COMUNICA CU ARDUINO
 #define NUM_LEDS 8    //  DEFINIM NUMARUL DE LEDURI DE PE BARA DE NEOPIXELI
 #include<Servo.h>     //  LIBRARIE PENTRU SERVOMOTOR 
+#include "SENZOR_ULTRASONIC.h"
+
+
 
 CRGB leds[NUM_LEDS];  //  FOLOSIM FUNCTIA PT. BARA DE NEOPIXELI
 Servo motoras;        //  FOLOSIM SERVOMOTORUL
@@ -11,14 +14,18 @@ int motorStangaInainte = 3;
 int motorStangaInapoi = 6;
 int motorDreaptaInainte = 9;
 int motorDreaptaInapoi = 5;
-unsigned short randomAlbastru;  //CULORI DIFERITE PT. REVERSE
-unsigned short nrLedRandom;  //CULORI DIFERITE PT. REVERSE
+unsigned short randomAlbastru;  //  CULORI DIFERITE PT. REVERSE
+unsigned short nrLedRandom;     //  CULORI DIFERITE PT. REVERSE
+int trig = 8;                  //  PIN TRIG PENTRU SENZOR ULTRASUNETE
+int echo = 12;                  //  PIN ECHO PENTRU SENZOR ULTRASUNETE
 
 void setup() {
   pinMode(motorStangaInainte, OUTPUT);
   pinMode(motorStangaInapoi, OUTPUT);
   pinMode(motorDreaptaInainte, OUTPUT);
   pinMode(motorDreaptaInapoi, OUTPUT);
+  pinMode(trig, OUTPUT);
+  pinMode(echo, INPUT);
   
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);  //  BARA DE NEOPIXELI
   randomSeed( analogRead(0));                             //  CULORI DIFERITE PT. REVERSE
