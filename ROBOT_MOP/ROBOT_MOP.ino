@@ -67,7 +67,7 @@ void loop() {
   if(distantaInainte > 100) {     
     controlDirection(2, 255);
     for(int i = 0; i < 8; i++) {
-      leds[i] = CRGB(255,0,0);
+      leds[i] = CRGB(255, 0, 0);
       FastLED.show();    
     }
     lcdInainte();   
